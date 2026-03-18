@@ -18,7 +18,14 @@ def analyze_lead(name, company, message):
             "messages": [
                 {
                     "role": "user",
-                    "content": f"Analyze this business lead. Return ONLY a JSON with score (1-10) and priority (HIGH/MEDIUM/LOW). Message: '{message}'"
+                    "content": f"""Analyze this business lead message and return ONLY a JSON with these fields:
+- score (1-10)
+- priority (HIGH/MEDIUM/LOW)
+- reply (a short professional reply suggestion)
+
+Message: '{message}'
+
+Return ONLY the JSON, nothing else."""
                 }
             ]
         }
@@ -32,7 +39,6 @@ def analyze_lead(name, company, message):
         result = response.json()
         ai_response = result["choices"][0]["message"]["content"]
         
-        # Clean and parse JSON
         clean = ai_response.strip()
         if "```" in clean:
             clean = clean.split("```")[1]
@@ -46,13 +52,14 @@ def analyze_lead(name, company, message):
             "company": company,
             "score": parsed["score"],
             "priority": parsed["priority"],
+            "reply": parsed["reply"],
             "status": "DONE"
         }
     
     except ValueError as e:
-        return {"name": name, "company": company, "score": 0, "priority": "SKIP", "status": str(e)}
+        return {"name": name, "company": company, "score": 0, "priority": "SKIP", "reply": "", "status": str(e)}
     except Exception as e:
-        return {"name": name, "company": company, "score": 0, "priority": "ERROR", "status": str(e)}
+        return {"name": name, "company": company, "score": 0, "priority": "ERROR", "reply": "", "status": str(e)}
 
 # Test leads
 leads = [
@@ -72,10 +79,10 @@ for lead in leads:
     print(f"Company: {result['company']}")
     print(f"Score: {result['score']}/10")
     print(f"Priority: {result['priority']}")
+    print(f"Suggested Reply: {result['reply']}")
     print(f"Status: {result['status']}")
     print("---")
 
-# Save to file
 with open("ai_lead_report.json", "w") as file:
     json.dump(results, file, indent=2)
 
