@@ -8,6 +8,7 @@ AI-powered lead scoring tool built in Python using Groq LLM API.
 - Scores buying intent (1-10)
 - Assigns priority (HIGH / MEDIUM / LOW)
 - Skips invalid or empty messages automatically
+- Generates professional reply suggestions for each lead
 - Saves structured results to JSON file
 
 ## How It Works
